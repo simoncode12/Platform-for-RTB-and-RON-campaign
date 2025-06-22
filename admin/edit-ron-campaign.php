@@ -52,11 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $bid_type = $_POST['bid_type'] ?? 'cpm';
         $bid_amount = floatval($_POST['bid_amount'] ?? 0);
         $format = $_POST['format'] ?? 'banner';
-        $target_countries = is_array($_POST['target_countries']) ? implode(',', $_POST['target_countries']) : '';
-        $target_browsers = is_array($_POST['target_browsers']) ? implode(',', $_POST['target_browsers']) : '';
-        $target_devices = is_array($_POST['target_devices']) ? implode(',', $_POST['target_devices']) : '';
-        $target_os = is_array($_POST['target_os']) ? implode(',', $_POST['target_os']) : '';
-        $target_languages = is_array($_POST['target_languages']) ? implode(',', $_POST['target_languages']) : '';
+        $target_countries = is_array($_POST['target_countries'] ?? null) ? implode(',', $_POST['target_countries']) : '';
+        $target_browsers = is_array($_POST['target_browsers'] ?? null) ? implode(',', $_POST['target_browsers']) : '';
+        $target_devices = is_array($_POST['target_devices'] ?? null) ? implode(',', $_POST['target_devices']) : '';
+        $target_os = is_array($_POST['target_os'] ?? null) ? implode(',', $_POST['target_os']) : '';
+        $target_languages = is_array($_POST['target_languages'] ?? null) ? implode(',', $_POST['target_languages']) : '';
         $target_age = $_POST['target_age'] ?? '';
         $target_gender = $_POST['target_gender'] ?? '';
         $daily_budget = floatval($_POST['daily_budget'] ?? 0);
@@ -495,6 +495,24 @@ include 'includes/header.php';
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">Target Languages</label>
+                                <select class="form-select" name="target_languages[]" multiple>
+                                    <?php 
+                                    $selected_languages = explode(',', $campaign['target_languages']);
+                                    $languages = [
+                                        'en' => 'English', 'es' => 'Spanish', 'fr' => 'French', 'de' => 'German',
+                                        'it' => 'Italian', 'pt' => 'Portuguese', 'ru' => 'Russian', 'zh' => 'Chinese',
+                                        'ja' => 'Japanese', 'ko' => 'Korean', 'ar' => 'Arabic', 'hi' => 'Hindi'
+                                    ];
+                                    foreach ($languages as $value => $label): ?>
+                                    <option value="<?php echo $value; ?>" <?php echo in_array($value, $selected_languages) ? 'selected' : ''; ?>>
+                                        <?php echo $label; ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -527,7 +545,7 @@ include 'includes/header.php';
                                 const mainForm = document.querySelector('form[method="POST"]:not(#targetingForm)');
                                 
                                 // Copy all targeting fields
-                                const targetingFields = ['target_countries[]', 'target_browsers[]', 'target_devices[]', 'target_os[]', 'target_age', 'target_gender'];
+                                const targetingFields = ['target_countries[]', 'target_browsers[]', 'target_devices[]', 'target_os[]', 'target_languages[]', 'target_age', 'target_gender'];
                                 
                                 targetingFields.forEach(fieldName => {
                                     const sourceField = this.querySelector(`[name="${fieldName}"]`);
@@ -664,7 +682,7 @@ function copyTargetingData() {
     mainForm.querySelectorAll('input[name^="target_"]').forEach(field => field.remove());
     
     // Copy targeting fields
-    const fieldsToCopy = ['target_countries[]', 'target_browsers[]', 'target_devices[]', 'target_os[]', 'target_age', 'target_gender'];
+    const fieldsToCopy = ['target_countries[]', 'target_browsers[]', 'target_devices[]', 'target_os[]', 'target_languages[]', 'target_age', 'target_gender'];
     
     fieldsToCopy.forEach(fieldName => {
         const sourceField = targetingForm.querySelector(`[name="${fieldName}"]`);
